@@ -330,20 +330,20 @@ function createPointCluster(p, id, accessor) {
     };
 }
 
-function getNestedProp(p, accessor, sep = "."){
+function getNestedProp(p, accessor = 'item', sep = '.') {
     // Read TYPE (Possibly deep)
-    let dep = accessor.split(sep)
+    const dep = accessor.split(sep);
     let prop = p;
-    while(dep.length > 0){
-        let part = dep.shift();
+    while (dep.length > 0) {
+        const part = dep.shift();
         // Read Index Passed in Accessor (ie. category[0])
-        if(part.indexOf('[')>-1){
-            let pieces = part.split('[')
-            let key = pieces[0];
-            let index = pieces[1].split(']')[0];
-            prop = prop[key][index]
-        }else{
-            prop = prop[part]
+        if (part.indexOf('[') > -1) {
+            const pieces = part.split('[');
+            const key = pieces[0];
+            const index = pieces[1].split(']')[0];
+            prop = prop[key][index];
+        } else {
+            prop = prop[part];
         }
     }
     return prop;

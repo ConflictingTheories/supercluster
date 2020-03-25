@@ -1,4 +1,4 @@
-/*global importScripts Supercluster */
+/*global importScripts SuperMulticluster */
 
 importScripts('../dist/supermulticluster.js');
 
