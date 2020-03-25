@@ -1,17 +1,24 @@
-# supercluster [![Simply Awesome](https://img.shields.io/badge/simply-awesome-brightgreen.svg)](https://github.com/mourner/projects) [![Build Status](https://travis-ci.org/mapbox/supercluster.svg?branch=master)](https://travis-ci.org/mapbox/supercluster)
+# supermulticluster
 
 A very fast JavaScript library for geospatial point clustering for browsers and Node.
 
 ```html
-<script src="https://unpkg.com/supercluster@6.0.2/dist/supercluster.min.js"></script>
+<script src="https://unpkg.com/supermulticluster@7.0.0/dist/supermulticluster.min.js"></script>
 ```
 
 ```js
-const index = new Supercluster({
+const index = new SuperMulticluster({
     radius: 40,
     maxZoom: 16
 });
-index.load(points);
+
+// List of Types your Points will be clustered by
+const typeList = ['school','business'];
+// Where in the point object can this item be found? (ie. what key property)
+const accessor = "properties.status.type";
+// Load Point Data
+index.load(points,typeList,accessor);
+// Fetch Clusters
 index.getClusters([-180, -85, 180, 85], 2);
 ```
 
@@ -21,25 +28,25 @@ Clustering 6 million points in Leaflet:
 
 ## Install
 
-Install using NPM (`npm install supercluster`) or Yarn (`yarn add supercluster`), then:
+Install using NPM (`npm install supermulticluster`) or Yarn (`yarn add supermulticluster`), then:
 
 ```js
 // import as a ES module
-import Supercluster from 'supercluster';
+import SuperMulticluster from 'supermulticluster';
 
 // or require in Node / Browserify
-const Supercluster = require('supercluster');
+const SuperMulticluster = require('supermulticluster');
 ```
 
 Or use a browser build directly:
 
 ```html
-<script src="https://unpkg.com/supercluster@6.0.2/dist/supercluster.min.js"></script>
+<script src="https://unpkg.com/supermulticluster@7.0.0/dist/supermulticluster.min.js"></script>
 ```
 
 ## Methods
 
-#### `load(points)`
+#### `load(points, typeList?, accessor?)`
 
 Loads an array of [GeoJSON Feature](https://tools.ietf.org/html/rfc7946#section-3.2) objects. Each feature's `geometry` must be a [GeoJSON Point](https://tools.ietf.org/html/rfc7946#section-3.1.2). Once loaded, index is immutable.
 
@@ -87,7 +94,7 @@ In addition to the options above, supercluster supports property aggregation wit
 Example of setting up a `sum` cluster property that accumulates the sum of `myValue` property values:
 
 ```js
-const index = new Supercluster({
+const index = new SuperMulticluster({
     map: (props) => ({sum: props.myValue}),
     reduce: (accumulated, props) => { accumulated.sum += props.sum; }
 });
@@ -95,10 +102,10 @@ const index = new Supercluster({
 
 Note that `reduce` must not mutate the second argument (`props`).
 
-## Developing Supercluster
+## Developing SuperMulticluster
 
 ```
 npm install       # install dependencies
-npm run build     # generate dist/supercluster.js and dist/supercluster.min.js
+npm run build     # generate dist/supermulticluster.js and dist/supermulticluster.min.js
 npm test          # run tests
 ```

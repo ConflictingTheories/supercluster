@@ -1,26 +1,26 @@
 
 import {test} from 'tape';
-import Supercluster from '../index.js';
+import SuperMulticluster from '../index.js';
 
 const places = require('./fixtures/places.json');
 const placesTile = require('./fixtures/places-z0-0-0.json');
 
 test('generates clusters properly', (t) => {
-    const index = new Supercluster().load(places.features);
+    const index = new SuperMulticluster().load(places.features);
     const tile = index.getTile(0, 0, 0);
     t.same(tile.features, placesTile.features);
     t.end();
 });
 
 test('returns children of a cluster', (t) => {
-    const index = new Supercluster().load(places.features);
+    const index = new SuperMulticluster().load(places.features);
     const childCounts = index.getChildren(164).map(p => p.properties.point_count || 1);
     t.same(childCounts, [6, 7, 2, 1]);
     t.end();
 });
 
 test('returns leaves of a cluster', (t) => {
-    const index = new Supercluster().load(places.features);
+    const index = new SuperMulticluster().load(places.features);
     const leafNames = index.getLeaves(164, 10, 5).map(p => p.properties.name);
     t.same(leafNames, [
         'Niagara Falls',
@@ -38,14 +38,14 @@ test('returns leaves of a cluster', (t) => {
 });
 
 test('generates unique ids with generateId option', (t) => {
-    const index = new Supercluster({generateId: true}).load(places.features);
+    const index = new SuperMulticluster({generateId: true}).load(places.features);
     const ids = index.getTile(0, 0, 0).features.filter(f => !f.tags.cluster).map(f => f.id);
     t.same(ids, [12, 20, 21, 22, 24, 28, 30, 62, 81, 118, 119, 125, 81, 118]);
     t.end();
 });
 
 test('getLeaves handles null-property features', (t) => {
-    const index = new Supercluster().load(places.features.concat([{
+    const index = new SuperMulticluster().load(places.features.concat([{
         type: 'Feature',
         properties: null,
         geometry: {
@@ -59,7 +59,7 @@ test('getLeaves handles null-property features', (t) => {
 });
 
 test('returns cluster expansion zoom', (t) => {
-    const index = new Supercluster().load(places.features);
+    const index = new SuperMulticluster().load(places.features);
     t.same(index.getClusterExpansionZoom(164), 1);
     t.same(index.getClusterExpansionZoom(196), 1);
     t.same(index.getClusterExpansionZoom(516), 2);
@@ -69,7 +69,7 @@ test('returns cluster expansion zoom', (t) => {
 });
 
 test('returns cluster expansion zoom for maxZoom', (t) => {
-    const index = new Supercluster({
+    const index = new SuperMulticluster({
         radius: 60,
         extent: 256,
         maxZoom: 4,
@@ -80,7 +80,7 @@ test('returns cluster expansion zoom for maxZoom', (t) => {
 });
 
 test('aggregates cluster properties with reduce', (t) => {
-    const index = new Supercluster({
+    const index = new SuperMulticluster({
         map: props => ({sum: props.scalerank}),
         reduce: (a, b) => { a.sum += b.sum; },
         radius: 100
@@ -95,7 +95,7 @@ test('aggregates cluster properties with reduce', (t) => {
 });
 
 test('returns clusters when query crosses international dateline', (t) => {
-    const index = new Supercluster().load([
+    const index = new SuperMulticluster().load([
         {
             type: 'Feature',
             properties: null,
@@ -138,7 +138,7 @@ test('returns clusters when query crosses international dateline', (t) => {
 });
 
 test('does not crash on weird bbox values', (t) => {
-    const index = new Supercluster().load(places.features);
+    const index = new SuperMulticluster().load(places.features);
     t.equal(index.getClusters([129.426390, -103.720017, -445.930843, 114.518236], 1).length, 26);
     t.equal(index.getClusters([112.207836, -84.578666, -463.149397, 120.169159], 1).length, 27);
     t.equal(index.getClusters([129.886277, -82.332680, -445.470956, 120.390930], 1).length, 26);

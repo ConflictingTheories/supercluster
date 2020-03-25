@@ -1,6 +1,6 @@
 /*global importScripts Supercluster */
 
-importScripts('../dist/supercluster.js');
+importScripts('../dist/supermulticluster.js');
 
 const now = Date.now();
 
@@ -9,7 +9,7 @@ let index;
 getJSON('../test/fixtures/places.json', (geojson) => {
     console.log(`loaded ${  geojson.length  } points JSON in ${  (Date.now() - now) / 1000  }s`);
 
-    index = new Supercluster({
+    index = new SuperMulticluster({
         log: true,
         radius: 60,
         extent: 256,

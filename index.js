@@ -16,16 +16,19 @@ const defaultOptions = {
     reduce: null, // (accumulated, props) => { accumulated.sum += props.sum; }
 
     // properties to use for individual points when running the reducer
-    map: props => props // props => ({sum: props.my_value})
+    map: props => props, // props => ({sum: props.my_value})
+
+    // Default Types
+    typeList: []
 };
 
-export default class Supercluster {
+export default class SuperMulticluster {
     constructor(options) {
         this.options = extend(Object.create(defaultOptions), options);
         this.trees = new Array(this.options.maxZoom + 1);
     }
 
-    load(points) {
+    load(points, typeList, accessor) {
         const {log, minZoom, maxZoom, nodeSize} = this.options;
 
         if (log) console.time('total time');
@@ -34,12 +37,13 @@ export default class Supercluster {
         if (log) console.time(timerId);
 
         this.points = points;
+        this.typeList = typeList;
 
         // generate a cluster object for each point and index input points into a KD-tree
         let clusters = [];
         for (let i = 0; i < points.length; i++) {
             if (!points[i].geometry) continue;
-            clusters.push(createPointCluster(points[i], i));
+            clusters.push(createPointCluster(points[i], i, accessor));
         }
         this.trees[maxZoom + 1] = new KDBush(clusters, getX, getY, nodeSize, Float32Array);
 
@@ -314,15 +318,35 @@ function createCluster(x, y, id, numPoints, properties) {
     };
 }
 
-function createPointCluster(p, id) {
+function createPointCluster(p, id, accessor) {
     const [x, y] = p.geometry.coordinates;
     return {
         x: lngX(x), // projected point coordinates
         y: latY(y),
         zoom: Infinity, // the last zoom the point was processed at
         index: id, // index of the source feature in the original input array,
-        parentId: -1 // parent cluster id
+        parentId: -1,
+        type: getNestedProp(p, accessor) // parent cluster id
     };
+}
+
+function getNestedProp(p, accessor, sep = "."){
+    // Read TYPE (Possibly deep)
+    let dep = accessor.split(sep)
+    let prop = p;
+    while(dep.length > 0){
+        let part = dep.shift();
+        // Read Index Passed in Accessor (ie. category[0])
+        if(part.indexOf('[')>-1){
+            let pieces = part.split('[')
+            let key = pieces[0];
+            let index = pieces[1].split(']')[0];
+            prop = prop[key][index]
+        }else{
+            prop = prop[part]
+        }
+    }
+    return prop;
 }
 
 function getClusterJSON(cluster) {
@@ -346,7 +370,8 @@ function getClusterProperties(cluster) {
         cluster: true,
         cluster_id: cluster.id,
         point_count: count,
-        point_count_abbreviated: abbrev
+        point_count_abbreviated: abbrev,
+        type: cluster.type
     });
 }
 

@@ -1,11 +1,11 @@
 {
-  "name": "supercluster",
+  "name": "supermulticluster",
   "version": "7.0.0",
-  "description": "A very fast geospatial point clustering library.",
-  "main": "dist/supercluster.js",
+  "description": "A very fast geospatial point clustering library - with multi support.",
+  "main": "dist/supermulticluster.js",
   "module": "index.js",
-  "jsdelivr": "dist/supercluster.min.js",
-  "unpkg": "dist/supercluster.min.js",
+  "jsdelivr": "dist/supermulticluster.min.js",
+  "unpkg": "dist/supermulticluster.min.js",
   "scripts": {
     "pretest": "eslint index.js bench.js test/test.js demo/index.js demo/worker.js",
     "test": "tape -r esm test/test.js",
@@ -16,19 +16,19 @@
   },
   "files": [
     "index.js",
-    "dist/supercluster.js",
-    "dist/supercluster.min.js"
+    "dist/supermulticluster.js",
+    "dist/supermulticluster.min.js"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/mapbox/supercluster.git"
+    "url": "git://github.com/ConflictingTheories/supermulticluster.git"
   },
   "keywords": [
     "clustering",
     "geospatial",
     "markers"
   ],
-  "author": "Vladimir Agafonkin",
+  "author": "Kyle Derby MacInnis",
   "license": "ISC",
   "dependencies": {
     "kdbush": "^3.0.0"
